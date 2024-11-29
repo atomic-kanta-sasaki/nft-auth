@@ -1,4 +1,4 @@
-# OSC北海道ハンズオン用スマートコントラクト
+# NFT認証用スマートコントラクト
 
 ## 準備
 Ethescan API Key: ethescanにSing up後APIを取得してください。スマートコントラクトのVerifyに使用します。
