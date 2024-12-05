@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     await prisma.nonce.findFirstOrThrow({
       where: {
         nonce,
-        ExpirationTime: {
+        expirationTime: {
           gte: new Date()
         }
       }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     // 期限切れnonceの削除
     await prisma.nonce.deleteMany({
       where: {
-        ExpirationTime: {
+        expirationTime: {
           lt: new Date()
         }
       }

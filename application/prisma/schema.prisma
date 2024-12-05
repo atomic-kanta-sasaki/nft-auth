@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id String @id @default(uuid())
+  email String? 
   eoa Eoa[]
 }
 
@@ -27,5 +28,18 @@ model Eoa {
 // Redisとかのほうが良い
 model Nonce {
   nonce String @id
-  ExpirationTime DateTime
+  expirationTime DateTime
+}
+
+model Nft {
+  tokenId Int 
+  contractAddress String
+  ownerAddress String?
+  nftType NftType @default(NONE)
+  @@id([tokenId, contractAddress])
+}
+
+enum NftType {
+  NONE
+  BASIC
 }
