@@ -19,7 +19,7 @@ export const useMintApi = () => {
       formData.append('name', payload.name);
     }
     try {
-      const res = await axios.post('/api/nft', formData, {
+      const res = await axios.post('/api/nft/mint', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

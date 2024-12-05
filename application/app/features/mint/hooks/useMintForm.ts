@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { useMintApi } from "./useMintApi";
-import { useSnackbar, SnackbarState, SnackbarActions } from "../../../hooks/useSnackbar";
+import { useSnackbar, SnackbarState } from "../../../hooks/useSnackbar";
 export type MintFormState = {
   name: string;
   preview: string | ArrayBuffer | null;
@@ -21,7 +21,7 @@ export const useMintForm = ():[MintFormState, MintFormActions] => {
   const [image, setImage] = useState<File | null>(null);
   const [{ isOpen, message }, { handleClose, handleSnackbar }] = useSnackbar();
 
-  const handleNameChange = (e:any) => {
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
   }
 

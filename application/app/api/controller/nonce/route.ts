@@ -9,7 +9,7 @@ export async function POST() {
   await prisma.nonce.create({
     data: {
       nonce,
-      ExpirationTime: new Date(now.setMinutes(now.getMinutes() + 5)) 
+      expirationTime: new Date(now.setMinutes(now.getMinutes() + 5)) 
     }
   })
 

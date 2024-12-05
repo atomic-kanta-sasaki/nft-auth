@@ -3,6 +3,7 @@
 import { BrowserProvider } from "ethers";
 import { useState } from "react";
 import { SiweMessage } from "siwe";
+import { Button } from "@mui/material";
 
 declare global {
   interface Window {
@@ -48,7 +49,7 @@ export default function Home() {
 
   return (
     <>
-      <button onClick={signInWithEthereum}>Sign-in with Ethereum</button>
+      <Button onClick={signInWithEthereum}>Sign-in with Ethereum</Button>
       <p>VerifiedAddress: {verifiedAddress}</p>
     </>
   );

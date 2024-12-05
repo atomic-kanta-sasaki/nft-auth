@@ -4,7 +4,6 @@ import "./globals.css";
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import { Header } from './components/Header';
 import { AxiosErrorHandleProvider } from "./components/AxiosErrorHandleProvider";
-import { SuccessSnackbar } from "./components/Snackbar";
 
 const inter = Inter({ subsets: ["latin"] });
 
