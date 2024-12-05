@@ -7,7 +7,6 @@ import { Select, MenuItem, FormControl, InputLabel } from '@mui/material';
 import { Button } from '@mui/material';
 import axios from "axios";
 
-
 export default function NftRegister() {
     const [tokenId, setTokenId] = useState(0);
     const [contractAddress, setContractAddres] = useState('');
