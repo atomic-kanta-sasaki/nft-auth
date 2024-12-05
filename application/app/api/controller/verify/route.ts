@@ -10,15 +10,27 @@ export async function POST(request: Request) {
   const domain = "localhost:3000";
 
   try {
-    const nonceRecord = await  prisma.nonce.findFirstOrThrow({
+    await prisma.nonce.findFirstOrThrow({
       where: {
-        nonce
+        nonce,
+        ExpirationTime: {
+          gte: new Date()
+        }
       }
     })
 
-    prisma.nonce.delete({
+    // 使用ずみnonceの削除
+    await prisma.nonce.delete({
       where: {
-        nonce: nonceRecord.nonce
+        nonce: nonce,
+      }
+    })
+    // 期限切れnonceの削除
+    await prisma.nonce.deleteMany({
+      where: {
+        ExpirationTime: {
+          lt: new Date()
+        }
       }
     })
 
@@ -26,6 +38,20 @@ export async function POST(request: Request) {
 
     if (!result.success) {
       return NextResponse.json({ error: "TODO: エラー" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: {
+        eoa: {
+          some: {
+            address: result.data.address
+          }
+        }
+      }
+    })
+
+    if(user) {
+      return NextResponse.json({message: 'すでに登録済みのユーザーです'}, {status: 200})
     }
 
     prisma.$transaction(async(tx) => {
