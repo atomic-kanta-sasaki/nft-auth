@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: NFT API
+  description: API documentation for the NFT system
+  version: 1.0.0
+servers:
+  - url: http://localhost:3000/api
+paths:
+  /auth/nft:
+    get:
+      summary: Get NFT authorization
+      responses:
+        '200':
+          description: Successfully fetched NFT authorization
+          content:
+            application/json:
+              example:
+                message: "NFT authorization fetched successfully"
+
+  /auth/nft/{contractAddress}/{tokenId}:
+    get:
+      summary: Fetch NFT details
+      parameters:
+        - name: contractAddress
+          in: path
+          required: true
+          description: The contract address of the NFT
+          schema:
+            type: string
+        - name: tokenId
+          in: path
+          required: true
+          description: The token ID of the NFT
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully fetched NFT details
+          content:
+            application/json:
+              example:
+                tokenId: "1"
+                contractAddress: "0x123456789abcdef"
+                ownerAddress: "0xabcdef123456789"
+                nftType: "Art"
+
+  /auth/vc:
+    get:
+      summary: Fetch VC details
+      responses:
+        '200':
+          description: Successfully fetched VC details
+          content:
+            application/json:
+              example:
+                message: "VC details fetched successfully"
+
+  /nft/list:
+    get:
+      summary: List NFTs
+      responses:
+        '200':
+          description: Successfully fetched list of NFTs
+          content:
+            application/json:
+              example:
+                nfts:
+                  - tokenId: "1"
+                    contractAddress: "0x123456789abcdef"
+                    ownerAddress: "0xabcdef123456789"
+                    nftType: "Art"
+
+  /nft/mint:
+    post:
+      summary: Mint a new NFT
+      requestBody:
+        description: NFT minting data
+        required: true
+        content:
+          application/json:
+            example:
+              contractAddress: "0x123456789abcdef"
+              ownerAddress: "0xabcdef123456789"
+              nftType: "Art"
+              metadata: {}
+      responses:
+        '201':
+          description: Successfully minted NFT
+          content:
+            application/json:
+              example:
+                message: "NFT minted successfully"
+                tokenId: "1"
+
+  /nft/register:
+    post:
+      summary: Register an NFT
+      requestBody:
+        description: NFT registration data
+        required: true
+        content:
+          application/json:
+            example:
+              contractAddress: "0x123456789abcdef"
+              ownerAddress: "0xabcdef123456789"
+              nftType: "Art"
+      responses:
+        '201':
+          description: Successfully registered NFT
+          content:
+            application/json:
+              example:
+                message: "NFT registered successfully"
+
+  /nft/type:
+    get:
+      summary: Get NFT types
+      responses:
+        '200':
+          description: Successfully fetched NFT types
+          content:
+            application/json:
+              example:
+                types:
+                  - "Art"
+                  - "Collectible"
+                  - "Utility"
+
+  /nonce:
+    get:
+      summary: Fetch nonce for verification
+      responses:
+        '200':
+          description: Successfully fetched nonce
+          content:
+            application/json:
+              example:
+                nonce: "123456"
+
+  /verify:
+    post:
+      summary: Verify a signature
+      requestBody:
+        description: Signature verification data
+        required: true
+        content:
+          application/json:
+            example:
+              address: "0xabcdef123456789"
+              signature: "0x123456abcdef"
+      responses:
+        '200':
+          description: Successfully verified
+          content:
+            application/json:
+              example:
+                message: "Verification successful"
