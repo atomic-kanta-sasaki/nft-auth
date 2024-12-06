@@ -54,7 +54,7 @@ export async function POST(reqest: NextRequest): Promise<NextResponse> {
   // EOAアドレスから認証対処のNFTを持っているかどうか判定
   // いったんopenseaからEOAが所有しているNFTの一覧を取得する
   const nftPromises = eoaList
-  ? eoaList.map(async (e) => {
+  ? eoaList.flatMap(async (e) => {
       const res = await axios.get(
         `https://${process.env.OPENSEA_API_HOST_NAME}/api/v2/chain/${process.env.OPENSEA_CHAIN_ID}/account/${e}/nfts`,
         {
@@ -66,7 +66,7 @@ export async function POST(reqest: NextRequest): Promise<NextResponse> {
       );
       return res.data.nfts;
     })
-  : []; // eoaListがundefinedの場合は空の配列
+  : [];
 
   const nftData = await Promise.all(nftPromises)
 
@@ -76,9 +76,13 @@ export async function POST(reqest: NextRequest): Promise<NextResponse> {
       { status: 401 }
     )
   }
+  const flattenedNftData = nftData.flat().filter(nft => nft.identifier);
+  console.log('===================================================')
+  console.log(flattenedNftData)
+  console.log('===================================================')
 
   // Map the raw data to NFT type
-  const nftArray: NFT[] | undefined = nftData[0]?.map((nft: any) => ({
+  const nftArray: NFT[] | undefined = flattenedNftData.map((nft: any) => ({
     identifier: nft.identifier,
     collection: nft.collection,
     contract: nft.contract,
