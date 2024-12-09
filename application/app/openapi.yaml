@@ -6,104 +6,159 @@ info:
 servers:
   - url: http://localhost:3000/api
 paths:
-  /auth/nft:
-    get:
-      summary: Get NFT authorization
-      responses:
-        '200':
-          description: Successfully fetched NFT authorization
-          content:
-            application/json:
-              example:
-                message: "NFT authorization fetched successfully"
-
   /auth/nft/{contractAddress}/{tokenId}:
-    get:
-      summary: Fetch NFT details
+    post:
+      tags:
+        - auth
+      summary: Verify NFT ownership
+      description: Verifies if a user owns specific NFTs by checking their linked EOAs against authorized NFTs.
+      operationId: verifyNFT
       parameters:
         - name: contractAddress
           in: path
           required: true
-          description: The contract address of the NFT
+          description: The contract address of the NFT.
           schema:
             type: string
+            example: "0x123abc456def789ghi"
         - name: tokenId
           in: path
           required: true
-          description: The token ID of the NFT
+          description: The token ID of the NFT.
           schema:
-            type: string
-      responses:
-        '200':
-          description: Successfully fetched NFT details
-          content:
-            application/json:
-              example:
-                tokenId: "1"
-                contractAddress: "0x123456789abcdef"
-                ownerAddress: "0xabcdef123456789"
-                nftType: "Art"
-
-  /auth/vc:
-    get:
-      summary: Fetch VC details
-      responses:
-        '200':
-          description: Successfully fetched VC details
-          content:
-            application/json:
-              example:
-                message: "VC details fetched successfully"
-
-  /nft/list:
-    get:
-      summary: List NFTs
-      responses:
-        '200':
-          description: Successfully fetched list of NFTs
-          content:
-            application/json:
-              example:
-                nfts:
-                  - tokenId: "1"
-                    contractAddress: "0x123456789abcdef"
-                    ownerAddress: "0xabcdef123456789"
-                    nftType: "Art"
-
-  /nft/mint:
-    post:
-      summary: Mint a new NFT
+            type: integer
+            example: 1234
       requestBody:
-        description: NFT minting data
         required: true
         content:
           application/json:
-            example:
-              contractAddress: "0x123456789abcdef"
-              ownerAddress: "0xabcdef123456789"
-              nftType: "Art"
-              metadata: {}
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: The ID of the user to verify.
+                  example: "12345"
+              required:
+                - userId
       responses:
-        '201':
-          description: Successfully minted NFT
+        '200':
+          description: Verification result
           content:
             application/json:
-              example:
-                message: "NFT minted successfully"
-                tokenId: "1"
+              schema:
+                type: array
+                items: 
+                  properties:
+                    tokenId:
+                      type: number
+                      description: nft tokenId
+                      example: 1
+                    contractAddress:
+                      type: string
+                      description: nft contractAddress
+                      example: "0x00000000000000001"
+                    ownerAddress:
+                      type: string
+                      description: nft owner address
+                      example: "0x00000000000000001"
+                    nftType:
+                      type: string
+                      description:  nft type
+                      enum: ["BASIC", "NONE"]
+                      example: "BASIC"
+                    isMatch:
+                      type: boolean
+                      description: user have nft
+                      example: true
+        '400':
+          description: Bad request due to missing or invalid parameters.
+        '401':
+          description: Unauthorized error due to no linked EOA or missing data.
+        '500':
+          description: Internal server error.
+  # /auth/nft:
+  #   get:
+  #     summary: Get NFT authorization
+  #     responses:
+  #       '200':
+  #         description: Successfully fetched NFT authorization
+  #         content:
+  #           application/json:
+  #             example:
+  #               message: "NFT authorization fetched successfully"
+  # /auth/vc:
+  #   get:
+  #     summary: Fetch VC details
+  #     responses:
+  #       '200':
+  #         description: Successfully fetched VC details
+  #         content:
+  #           application/json:
+  #             example:
+  #               message: "VC details fetched successfully"
+
+  # /nft/list:
+  #   get:
+  #     summary: List NFTs
+  #     responses:
+  #       '200':
+  #         description: Successfully fetched list of NFTs
+  #         content:
+  #           application/json:
+  #             example:
+  #               nfts:
+  #                 - tokenId: "1"
+  #                   contractAddress: "0x123456789abcdef"
+  #                   ownerAddress: "0xabcdef123456789"
+  #                   nftType: "Art"
+
+  # /nft/mint:
+  #   post:
+  #     summary: Mint a new NFT
+  #     requestBody:
+  #       description: NFT minting data
+  #       required: true
+  #       content:
+  #         application/json:
+  #           example:
+  #             contractAddress: "0x123456789abcdef"
+  #             ownerAddress: "0xabcdef123456789"
+  #             nftType: "Art"
+  #             metadata: {}
+  #     responses:
+  #       '201':
+  #         description: Successfully minted NFT
+  #         content:
+  #           application/json:
+  #             example:
+  #               message: "NFT minted successfully"
+  #               tokenId: "1"
 
   /nft/register:
     post:
       summary: Register an NFT
       requestBody:
-        description: NFT registration data
         required: true
         content:
           application/json:
-            example:
-              contractAddress: "0x123456789abcdef"
-              ownerAddress: "0xabcdef123456789"
-              nftType: "Art"
+            schema:
+              type: object
+              properties:
+                tokenId:
+                  type: number
+                  description: register nft tokenId.
+                  example: 1
+                contractAddress:
+                  type: string
+                  description: register nft contract address
+                  example: "0x00000000000000001"
+                nftType:
+                  type: string
+                  enum: ["BASIC", "NONE"]
+                  example: "BASIC"
+              required:
+                - userId
       responses:
         '201':
           description: Successfully registered NFT
@@ -111,47 +166,53 @@ paths:
             application/json:
               example:
                 message: "NFT registered successfully"
+        '400':
+          description: Bad request due to missing or invalid parameters.
+        '401':
+          description: Unauthorized error due to no linked EOA or missing data.
+        '500':
+          description: Internal server error.
 
-  /nft/type:
-    get:
-      summary: Get NFT types
-      responses:
-        '200':
-          description: Successfully fetched NFT types
-          content:
-            application/json:
-              example:
-                types:
-                  - "Art"
-                  - "Collectible"
-                  - "Utility"
+  # /nft/type:
+  #   get:
+  #     summary: Get NFT types
+  #     responses:
+  #       '200':
+  #         description: Successfully fetched NFT types
+  #         content:
+  #           application/json:
+  #             example:
+  #               types:
+  #                 - "Art"
+  #                 - "Collectible"
+  #                 - "Utility"
 
-  /nonce:
-    get:
-      summary: Fetch nonce for verification
-      responses:
-        '200':
-          description: Successfully fetched nonce
-          content:
-            application/json:
-              example:
-                nonce: "123456"
+  # /nonce:
+  #   get:
+  #     summary: Fetch nonce for verification
+  #     responses:
+  #       '200':
+  #         description: Successfully fetched nonce
+  #         content:
+  #           application/json:
+  #             example:
+  #               nonce: "123456"
 
-  /verify:
-    post:
-      summary: Verify a signature
-      requestBody:
-        description: Signature verification data
-        required: true
-        content:
-          application/json:
-            example:
-              address: "0xabcdef123456789"
-              signature: "0x123456abcdef"
-      responses:
-        '200':
-          description: Successfully verified
-          content:
-            application/json:
-              example:
-                message: "Verification successful"
+  # /verify:
+  #   post:
+  #     summary: Verify a signature
+  #     requestBody:
+  #       description: Signature verification data
+  #       required: true
+  #       content:
+  #         application/json:
+  #           example:
+  #             address: "0xabcdef123456789"
+  #             signature: "0x123456abcdef"
+  #     responses:
+  #       '200':
+  #         description: Successfully verified
+  #         content:
+  #           application/json:
+  #             example:
+  #               message: "Verification successful"

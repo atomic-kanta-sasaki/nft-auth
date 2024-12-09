@@ -77,10 +77,6 @@ export async function POST(reqest: NextRequest): Promise<NextResponse> {
     )
   }
   const flattenedNftData = nftData.flat().filter(nft => nft.identifier);
-  console.log('===================================================')
-  console.log(flattenedNftData)
-  console.log('===================================================')
-
   // Map the raw data to NFT type
   const nftArray: NFT[] | undefined = flattenedNftData.map((nft: any) => ({
     identifier: nft.identifier,
