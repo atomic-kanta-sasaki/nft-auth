@@ -6,28 +6,13 @@ info:
 servers:
   - url: http://localhost:3000/api
 paths:
-  /auth/nft/{contractAddress}/{tokenId}:
+  /auth/nft:
     post:
       tags:
         - auth
       summary: Verify NFT ownership
       description: Verifies if a user owns specific NFTs by checking their linked EOAs against authorized NFTs.
       operationId: verifyNFT
-      parameters:
-        - name: contractAddress
-          in: path
-          required: true
-          description: The contract address of the NFT.
-          schema:
-            type: string
-            example: "0x123abc456def789ghi"
-        - name: tokenId
-          in: path
-          required: true
-          description: The token ID of the NFT.
-          schema:
-            type: integer
-            example: 1234
       requestBody:
         required: true
         content:
@@ -77,16 +62,100 @@ paths:
           description: Unauthorized error due to no linked EOA or missing data.
         '500':
           description: Internal server error.
-  # /auth/nft:
-  #   get:
-  #     summary: Get NFT authorization
-  #     responses:
-  #       '200':
-  #         description: Successfully fetched NFT authorization
-  #         content:
-  #           application/json:
-  #             example:
-  #               message: "NFT authorization fetched successfully"
+  /nft/{contractAddress}/{tokenId}:
+    get:
+      summary: Get NFT Info
+      tags:
+        - nftInfo
+      operationId: getNft
+      parameters:
+        - name: contractAddress
+          in: path
+          required: true
+          description: The contract address of the NFT.
+          schema:
+            type: string
+            example: "0x123abc456def789ghi"
+        - name: tokenId
+          in: path
+          required: true
+          description: The token ID of the NFT.
+          schema:
+            type: integer
+            example: 1234
+      responses:
+        '200':
+          description: Successfully fetched NFT Info
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tokenId:
+                    type: number
+                    description: nft tokenId
+                    example: 1
+                  contractAddress:
+                    type: string
+                    description: nft contract address
+                    example: "0x00000000000000001"
+                  ownerAddress:
+                    type: string
+                    description: nft owner eoa address
+                    example: "0x00000000000000001"
+                  nftType:
+                      type: string
+                      description:  nft type
+                      enum: ["BASIC", "NONE"]
+                      example: "BASIC"
+        '400':
+          description: Bad request due to missing or invalid parameters.
+        '401':
+          description: Unauthorized error due to no linked EOA or missing data.
+        '500':
+          description: Internal server error.
+    put:
+      summary: Put Nft Info
+      tags:
+        - nftInfo
+      operationId: putNft
+      parameters:
+        - name: contractAddress
+          in: path
+          required: true
+          description: The contract address of the NFT.
+          schema:
+            type: string
+            example: "0x123abc456def789ghi"
+        - name: tokenId
+          in: path
+          required: true
+          description: The token ID of the NFT.
+          schema:
+            type: integer
+            example: 1234
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nftType:
+                  type: string
+                  description:  nft type
+                  enum: ["BASIC", "NONE"]
+                  example: "BASIC"
+      responses:
+        '200':
+          description: success
+        '400':
+          description: Bad request due to missing or invalid parameters.
+        '401':
+          description: Unauthorized error due to no linked EOA or missing data.
+        '500':
+          description: Internal server error.
+
   # /auth/vc:
   #   get:
   #     summary: Fetch VC details
@@ -98,20 +167,39 @@ paths:
   #             example:
   #               message: "VC details fetched successfully"
 
-  # /nft/list:
-  #   get:
-  #     summary: List NFTs
-  #     responses:
-  #       '200':
-  #         description: Successfully fetched list of NFTs
-  #         content:
-  #           application/json:
-  #             example:
-  #               nfts:
-  #                 - tokenId: "1"
-  #                   contractAddress: "0x123456789abcdef"
-  #                   ownerAddress: "0xabcdef123456789"
-  #                   nftType: "Art"
+  /nft/list:
+    get:
+      summary: List NFTs
+      tags:
+        - nftInfo
+      operationId: nftList
+      responses:
+        '200':
+          description: Successfully fetched list of NFTs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  properties:
+                    tokenId:
+                      type: number
+                      description: nft tokenId
+                      example: 1
+                    contractAddress:
+                      type: string
+                      description: nft contract address
+                      example: "0x00000000000000001"
+                    ownerAddress:
+                      type: string
+                      description: nft owner eoa address
+                      example: "0x00000000000000001"
+                    nftType:
+                        type: string
+                        description:  nft type
+                        enum: ["BASIC", "NONE"]
+                        example: "BASIC"
+
 
   # /nft/mint:
   #   post:
@@ -138,6 +226,9 @@ paths:
   /nft/register:
     post:
       summary: Register an NFT
+      tags:
+        - registerNFT
+      operationId: registerNft
       requestBody:
         required: true
         content:
@@ -173,46 +264,117 @@ paths:
         '500':
           description: Internal server error.
 
-  # /nft/type:
-  #   get:
-  #     summary: Get NFT types
-  #     responses:
-  #       '200':
-  #         description: Successfully fetched NFT types
-  #         content:
-  #           application/json:
-  #             example:
-  #               types:
-  #                 - "Art"
-  #                 - "Collectible"
-  #                 - "Utility"
+  /nonce:
+    get:
+      tags:
+        - nonce
+      operationId: getNonce
+      summary: Fetch nonce for verification
+      responses:
+        '200':
+          description: Successfully fetched nonce
+          content:
+            application/json:
+              schema:
+                properties:
+                  nonce: 
+                    type: "string"
+                    description: nonce
+                    example: "12345"
+        '400':
+          description: Bad request due to missing or invalid parameters.
+        '401':
+          description: Unauthorized error due to no linked EOA or missing data.
+        '500':
+          description: Internal server error.
 
-  # /nonce:
-  #   get:
-  #     summary: Fetch nonce for verification
-  #     responses:
-  #       '200':
-  #         description: Successfully fetched nonce
-  #         content:
-  #           application/json:
-  #             example:
-  #               nonce: "123456"
 
-  # /verify:
-  #   post:
-  #     summary: Verify a signature
-  #     requestBody:
-  #       description: Signature verification data
-  #       required: true
-  #       content:
-  #         application/json:
-  #           example:
-  #             address: "0xabcdef123456789"
-  #             signature: "0x123456abcdef"
-  #     responses:
-  #       '200':
-  #         description: Successfully verified
-  #         content:
-  #           application/json:
-  #             example:
-  #               message: "Verification successful"
+  /verify:
+    post:
+      tags:
+        - registerUser
+      summary: Verify SIWE message and register user
+      description: Verifies a SIWE message, checks if the user is already registered, and creates a new user if not.
+      operationId: verifySiwe
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  description: The SIWE message to verify.
+                  example: "sample message" # Replace with an actual SIWE message example.
+                signature:
+                  type: string
+                  description: The signature of the SIWE message.
+                  example: "0x51a9d41a4c4ddf4bca3f6e62abd41d57ed75ec454a0331324abb1df37c25043e1d1cb292e32ba48ce7698a5257dab2b46afb8ffd9e452b17cfc8c108fcbd290c1b"
+                nonce:
+                  type: string
+                  description: The nonce associated with the SIWE message.
+                  example: "abc123"
+              required:
+                - message
+                - signature
+                - nonce
+      responses:
+        '200':
+          description: Verification success and user registration.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domain:
+                    type: string
+                    description: domain
+                    example: "localhost:3000"
+                  address: 
+                    type: string
+                    description: verify eoa address
+                    example: "0x7ff9807C4E2f9E97eC099D0823544433c9fB3F64"
+                  url:
+                    type: string
+                    description: host url
+                    example: "http://localhost:3000"
+                  version:
+                    type: string
+                    description: version
+                    example: 1
+                  nonce:
+                    type: string
+                    description:  nonce
+                    example: "1wCE8rp5eGiL095fY"
+                  issuedAt:
+                    type: string
+                    description: issuedAt
+                    example: 24-12-09T05:04:38.084Z"
+                  chainId:
+                    type: number
+                    description: chainId
+                    example: 1
+                  
+        '401':
+          description: Verification failed or unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message explaining why verification failed.
+                    example: "TODO: エラー"
+        '500':
+          description: Internal server error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Error message for unexpected server errors.
+                    example: "Internal server error."

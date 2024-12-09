@@ -25,7 +25,6 @@ export async function PUT(
 ): Promise<NextResponse> {
   const prisma = new PrismaClient()
   const tokenId = Number(params.tokenId)
-  console.log(params.contractAddress)
   const { nftType } = await request.json()
   await prisma.nft.update({
     where: {
